@@ -16,7 +16,7 @@ if(PD_HEADER_PATH)
     endif()
     add_library(pdcsound MODULE src/csoundapi_tilde.c)
     target_include_directories(pdcsound PRIVATE
-    ${CSOUND_INCLUDE_DIRECTORIES} ${PD_HEADER_PATH})
+    ${CSOUND_INCLUDE_DIRS} ${PD_HEADER_PATH})
     if(WIN32)
         target_link_libraries (pdcsound ${CSOUND_LIBRARY} ${PD_LIBRARY})
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
