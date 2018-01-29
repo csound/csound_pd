@@ -31,7 +31,6 @@ if(PD_HEADER_PATH)
     if(APPLE)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
             "-flat_namespace -undefined suppress")
-	 add_definitions(-DMACOSX)
     endif(APPLE)
     install(TARGETS pdcsound
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

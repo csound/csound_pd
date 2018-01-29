@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <m_pd.h>
 #include <pthread.h>
-#if defined(MACOSX)
+#if defined(__APPLE__)
 #include <CsoundLib64/csound.h>
 #else
 #include <csound/csound.h>
