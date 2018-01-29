@@ -26,7 +26,11 @@
 #include <stdio.h>
 #include <m_pd.h>
 #include <pthread.h>
-#include "csound.h"
+#if defined(MACOSX)
+#include <CsoundLib64/csound.h>
+#else
+#include <csound/csound.h>
+#endif
 
 #define CS_MAX_CHANS 32
 #define MAXMESSTRING 16384
