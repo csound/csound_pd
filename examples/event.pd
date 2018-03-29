@@ -1,0 +1,26 @@
+#N canvas 476 258 457 359 10;
+#X obj 103 286 dac~;
+#X msg 71 32 event i 1 0 1;
+#X text 186 32 call instrument 1;
+#X text 89 77 choose different function tables for the sound;
+#X text 20 -12 comment;
+#X msg 71 110 event f 1 0 1024 10 1;
+#X text 25 108 Sine;
+#X text 25 134 Saw;
+#X msg 71 134 event f 1 0 1024 10 1 0.5 0.33 0.25 0.2 0.167 0.143;
+#X text 14 160 Square;
+#X msg 72 160 event f 1 0 1024 10 1 0 0.33 0 0.2 0 0.143;
+#X text 1 186 Triangle;
+#X msg 72 184 event f 1 0 1024 10 1 0 -0.111 0 0.04 0 -0.02 0 0.0123
+;
+#X text 5 210 Impulse;
+#X msg 72 209 event f 1 0 1024 10 1 1 1 1 1 1 1 1 1;
+#X obj 101 252 csound6~ event.csd;
+#X connect 1 0 15 0;
+#X connect 5 0 15 0;
+#X connect 8 0 15 0;
+#X connect 10 0 15 0;
+#X connect 12 0 15 0;
+#X connect 14 0 15 0;
+#X connect 15 0 0 0;
+#X connect 15 1 0 1;

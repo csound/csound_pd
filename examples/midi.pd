@@ -1,0 +1,17 @@
+#N canvas 525 271 450 300 10;
+#X obj 103 248 dac~;
+#X obj 61 88 notein;
+#X obj 60 117 pack;
+#X msg 59 145 midi 144 \$1 \$2;
+#X text 124 88 receive note-on messages;
+#X text 124 117 pack note number and velocity;
+#X text 174 144 send to csound (144 = note on messages);
+#X text 21 29 YOU MUST USE THE OPTION -+rtmidi=null -M0 IN YOUR CSD
+FILE!;
+#X obj 101 214 csound6~ midi.csd;
+#X connect 1 0 2 0;
+#X connect 1 1 2 1;
+#X connect 2 0 3 0;
+#X connect 3 0 8 0;
+#X connect 8 0 0 0;
+#X connect 8 1 0 1;

@@ -1,0 +1,17 @@
+#N canvas 540 278 373 295 10;
+#X obj 63 60 dac~;
+#X msg 176 51 \; \$1 \$2;
+#X obj 122 108 r time;
+#X obj 184 108 r phas;
+#X floatatom 122 135 5 0 0 0 - - -, f 5;
+#X text 248 52 \$1 = channel;
+#X obj 122 108 r time;
+#X text 249 69 \$2 = value;
+#X obj 185 132 vsl 15 128 0 127 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 12698 1;
+#X obj 61 26 csound6~ controlout.csd;
+#X connect 2 0 4 0;
+#X connect 3 0 8 0;
+#X connect 9 0 0 0;
+#X connect 9 1 0 1;
+#X connect 9 2 1 0;
