@@ -1,0 +1,27 @@
+#N canvas 553 339 450 300 10;
+#X msg 134 159 control amp \$1;
+#X floatatom 281 133 5 0 0 0 - - -, f 5;
+#X msg 256 160 control freq \$1;
+#X obj 103 241 dac~;
+#X msg 24 132 set amp freq;
+#X obj 102 194 csound6~ control.csd;
+#X obj 137 105 hsl 128 15 40 100 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 5300 1;
+#X msg 284 105 400;
+#X obj 284 78 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 22 10 1 set invalue channels by clicking on the set ... message
+box;
+#X text 24 44 2 click on the bang to activate the freq \, and move
+the slider to change the amplitude;
+#X obj 133 132 dbtorms;
+#X connect 0 0 5 0;
+#X connect 1 0 2 0;
+#X connect 2 0 5 0;
+#X connect 4 0 5 0;
+#X connect 5 0 3 0;
+#X connect 5 1 3 1;
+#X connect 6 0 11 0;
+#X connect 7 0 1 0;
+#X connect 8 0 7 0;
+#X connect 11 0 0 0;
