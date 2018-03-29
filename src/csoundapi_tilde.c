@@ -277,6 +277,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
       csoundSetInputChannelCallback(x->csound, in_channel_value_callback);
       csoundSetOutputChannelCallback(x->csound, out_channel_value_callback);
 
+      csoundSetHostImplementedMIDIIO(x->csound, 1);
       csoundSetExternalMidiInOpenCallback(x->csound, open_midi_callback);
       csoundSetExternalMidiReadCallback(x->csound, read_midi_callback);
       csoundSetExternalMidiInCloseCallback(x->csound, close_midi_callback);
