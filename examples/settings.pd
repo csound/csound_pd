@@ -1,25 +1,29 @@
-#N canvas 661 197 562 482 10;
-#X msg 157 240 reset;
-#X obj 100 26 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
+#N canvas 661 202 562 482 10;
+#X msg 150 306 reset;
+#X obj 93 92 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
-#X msg 101 46 run \$1;
-#X text 123 18 csound runs by default \, run 0 message stops it \,
+#X msg 94 112 run \$1;
+#X text 116 84 csound runs by default \, run 0 message stops it \,
 run 1 re-starts it;
-#X text 205 239 resets the engine and recompiles the score;
-#X text 299 263 opens a new orc/score;
-#X msg 44 150 rewind;
-#X text 97 151 rewinds the score without recompilation;
-#X msg 42 183 offset 20;
-#X text 117 184 offsets the score playback by 20 secs;
-#X msg 117 103 messages \$1;
-#X obj 117 82 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
-;
-#X text 208 102 console messages on/off;
-#X obj 92 317 csound6~;
-#X msg 156 261 open cs6_demo.csd;
-#X text 49 362 csound6~ is built with the number of audio output channels
+#X text 198 305 resets the engine and recompiles the score;
+#X text 292 329 opens a new orc/score;
+#X msg 37 216 rewind;
+#X text 90 217 rewinds the score without recompilation;
+#X msg 35 249 offset 20;
+#X text 110 250 offsets the score playback by 20 secs;
+#X msg 110 169 messages \$1;
+#X obj 110 148 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
+1;
+#X text 201 168 console messages on/off;
+#X obj 85 383 csound6~;
+#X msg 149 327 open cs6_demo.csd;
+#X text 42 428 csound6~ is built with the number of audio output channels
 taken from the orchestra \, or it can be built with a set number of
 out/inlets (when its 1st argument is numeric), f 61;
+#X text 27 16 Make sure that the Csound vector size given by the ksmps
+value \, is not larger than the internal PD vector size. It should
+be a power of 2 Start with ksmps=8. If there are performance problems
+\, try to increase this value to 16 \, 32 \, or 64, f 65;
 #X connect 0 0 13 0;
 #X connect 1 0 2 0;
 #X connect 2 0 13 0;
