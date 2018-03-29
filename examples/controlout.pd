@@ -1,4 +1,4 @@
-#N canvas 540 278 373 295 10;
+#N canvas 540 283 570 366 10;
 #X obj 63 60 dac~;
 #X msg 176 51 \; \$1 \$2;
 #X obj 122 108 r time;
@@ -8,8 +8,10 @@
 #X obj 122 108 r time;
 #X text 249 69 \$2 = value;
 #X obj 185 132 vsl 15 128 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 12698 1;
+-1 -1 0 1;
 #X obj 61 26 csound6~ controlout.csd;
+#X text 18 278 see http://write.flossmanuals.net/csound/a-csound-in-pd/
+for more information;
 #X connect 2 0 4 0;
 #X connect 3 0 8 0;
 #X connect 9 0 0 0;

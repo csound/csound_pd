@@ -1,4 +1,4 @@
-#N canvas 598 279 450 300 10;
+#N canvas 598 284 450 300 10;
 #X obj 173 212 dac~;
 #X obj 140 40 adc~;
 #X msg 229 60 reset;
@@ -8,6 +8,8 @@
 #X floatatom 252 233 5 0 0 0 - - -, f 5;
 #X obj 252 209 r testsig;
 #X obj 154 130 csound6~ livein.csd;
+#X text 10 257 see http://write.flossmanuals.net/csound/a-csound-in-pd/
+for more information;
 #X connect 1 0 8 0;
 #X connect 1 1 8 1;
 #X connect 2 0 8 0;
