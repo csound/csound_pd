@@ -24,10 +24,9 @@ if(PD_HEADER_PATH)
     else()
         target_link_libraries (pdcsound ${CSOUND_LIBRARY})
     endif()
-    set_target_properties(pdcsound PROPERTIES
-        PREFIX ""
-        SUFFIX ""
-        OUTPUT_NAME ${pdname})
+    set_target_properties(pdcsound PROPERTIES  PREFIX "")
+    set_target_properties(pdcsound PROPERTIES  SUFFIX "")
+    set_target_properties(pdcsound PROPERTIES  OUTPUT_NAME ${pdname})
     if(APPLE)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
             "-flat_namespace -undefined suppress")
