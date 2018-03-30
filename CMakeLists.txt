@@ -7,12 +7,12 @@ find_path(PD_HEADER_PATH m_pd.h)
 find_library(PD_LIBRARY pd.dll)
 
 if(PD_HEADER_PATH)
-    if(LINUX)
-        set(pdname "csound6~.pd_linux")
-    elseif(APPLE)
+    if(APPLE)
         set(pdname "csound6~.pd_darwin")
     elseif(WIN32)
-        set(pdname "csound6~.dll")
+      set(pdname "csound6~.dll")
+    else()
+       set(pdname "csound6~.pd_linux")
     endif()
     add_library(pdcsound MODULE src/csoundapi_tilde.c)
     target_include_directories(pdcsound PRIVATE
@@ -32,6 +32,9 @@ if(PD_HEADER_PATH)
             "-flat_namespace -undefined suppress")
     endif(APPLE)
     install(TARGETS pdcsound
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+      LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+else()
+   MESSAGE(FATAL_ERROR "PD header not found")
 endif()
+    
 
