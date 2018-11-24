@@ -25,7 +25,6 @@
 
 #include <stdio.h>
 #include <m_pd.h>
-#include <pthread.h>
 #if defined(__APPLE__)
 #include <CsoundLib64/csound.h>
 #else
@@ -569,7 +568,7 @@ static void csoundapi_tabget(t_csoundapi *x,  t_symbol *tab, t_float f)
     } else post("csound6~: csound table %d not found \n", (int) f);
 }
 
-void *thread_func(void *p){
+uintptr_t thread_func(void *p){
     t_csoundapi *pp = (t_csoundapi *) p;
     int size = 0;
     char c;
@@ -598,7 +597,7 @@ void *thread_func(void *p){
 
       if(size==0) {
         fclose(fp);
-        return NULL;
+        return 0;
       }
 
       orc = (char *) malloc(size+1);
@@ -611,15 +610,14 @@ void *thread_func(void *p){
     else post("csound6~: could not open %s \n", pp->orc);
 
     free(orcfile);
-    return NULL;
+    return 0;
 }
 
 
 static void csoundapi_compile(t_csoundapi *x,  t_symbol *orc) {
-    pthread_t thread;
     if(x->orc != NULL) free(x->orc);
     x->orc = strdup(orc->s_name);
-    pthread_create(&thread, NULL, thread_func, x);
+    csoundCreateThread(thread_func, (void *) x);
 }
 
 

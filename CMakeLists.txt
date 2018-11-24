@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(Csound)
@@ -18,7 +19,8 @@ if(PD_HEADER_PATH)
     target_include_directories(pdcsound PRIVATE
     ${CSOUND_INCLUDE_DIRS} ${PD_HEADER_PATH})
     if(WIN32)
-        target_link_libraries (pdcsound ${CSOUND_LIBRARY} ${PD_LIBRARY})
+        target_link_libraries (pdcsound ${CSOUND_LIBRARY}
+    ${PD_LIBRARY})
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
             "-Wl,--allow-multiple-definition")
     else()
