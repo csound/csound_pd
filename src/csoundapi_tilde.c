@@ -371,7 +371,7 @@ static t_int *csoundapi_perform(t_int *w)
           posn++;
         }
         for (n = 0; n < numlets; n++) {
-          out[n][i] = (t_float) (n < chans ? csout[pos] / scal : 0.0);
+          out[n][i] = (t_sample) (n < chans ? csout[pos] / scal : 0.0);
           pos++;
         }
       }
