@@ -136,7 +136,7 @@ PUBLIC void csound6_tilde_setup(void)
                 (t_method) csoundapi_destroy, sizeof(t_csoundapi),
                 CLASS_DEFAULT, A_GIMME, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_dsp, gensym("dsp"),
-                    (t_atomtype) 0);
+                    A_CANT, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_event,
                     gensym("event"), A_GIMME, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_reset,
