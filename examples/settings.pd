@@ -21,7 +21,7 @@ run 1 re-starts it;
 taken from the orchestra \, or it can be built with a set number of
 out/inlets (when its 1st argument is numeric), f 61;
 #X text 27 16 Make sure that the Csound vector size given by the ksmps
-value \, is not larger than the internal PD vector size. It should
+value \, is not larger than the internal Pd vector size. It should
 be a power of 2 Start with ksmps=8. If there are performance problems
 \, try to increase this value to 16 \, 32 \, or 64, f 65;
 #X connect 0 0 13 0;

@@ -35,7 +35,7 @@ if(PD_HEADER_PATH)
             "-flat_namespace -undefined suppress")
     endif(APPLE)
 else()
-   MESSAGE(FATAL_ERROR "PD header not found")
+   MESSAGE(FATAL_ERROR "Pd header not found")
 endif()
     
 
