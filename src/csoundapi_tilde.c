@@ -733,7 +733,7 @@ static void csoundapi_set_channel(t_csoundapi *x, t_symbol *s,
       if(i+1 < argc){
         if(argv[i+1].a_type == A_SYMBOL) {
           t_symbol *mess = atom_getsymbol(&argv[i+1]);
-          csoundSetStringChannel(csound, chn, mess->s_name);
+          csoundSetStringChannel(csound, chn, (char*)mess->s_name);
         }
         else if (argv[i+1].a_type == A_FLOAT) {
           csoundSetControlChannel(csound, chn, atom_getfloat(&argv[i+1]));
