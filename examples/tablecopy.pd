@@ -9982,25 +9982,24 @@
 0.028595 -0.0039978 -0.00912476 0.0183105 0.043396 0.0409241 0.0132446
 ;
 #X coords 0 1 88199 -1 200 140 1;
-#X restore -729 2 graph;
-#X msg -752 197 tabset beats 1;
-#X obj -680 408 dac~;
-#X msg -721 226 event i 1 0 2 1;
-#X text -596 228 3) now play table 1 in csound again;
-#X text -639 199 2) copies from array "beats" to csound table no 1
-;
-#X msg -746 164 event i 1 0 2 1;
-#X text -620 164 1) play table 1 in csound and you will hear nothing
+#X restore 51 42 graph;
+#X msg 28 237 tabset beats 1;
+#X obj 100 448 dac~;
+#X msg 59 266 event i 1 0 2 1;
+#X text 184 268 3) now play table 1 in csound again;
+#X text 141 239 2) copies from array "beats" to csound table no 1;
+#X msg 34 204 event i 1 0 2 1;
+#X text 160 204 1) play table 1 in csound and you will hear nothing
 because the table is empty;
 #N canvas 0 50 450 300 (subpatch) 0;
 #X array fox 132300 float 2;
 #X coords 0 1 132299 -1 200 140 1;
-#X restore -463 8 graph;
-#X obj -681 366 csound6~ tablecopy.csd;
-#X msg -693 252 event i 1 0 2.7 2;
-#X text -556 254 4) play table 2 in csound;
-#X msg -666 288 tabget fox 2;
-#X text -559 290 5) copy this table to the pd array "fox";
+#X restore 317 48 graph;
+#X obj 99 406 csound6~ tablecopy.csd;
+#X msg 87 292 event i 1 0 2.7 2;
+#X text 224 294 4) play table 2 in csound;
+#X msg 114 328 tabget fox 2;
+#X text 221 330 5) copy this table to the pd array "fox";
 #X connect 1 0 9 0;
 #X connect 3 0 9 0;
 #X connect 6 0 9 0;
