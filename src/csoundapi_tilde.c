@@ -262,11 +262,11 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
               strcpy(cmdl[i], x->curdir->s_name);
               strcat(cmdl[i],"/");
               strcat(cmdl[i],tmp);
-              post(cmdl[i]);
+              post("%s", cmdl[i]);
               free(tmp);
             }
         }
-        post(cmdl[i]);
+        post("%s", cmdl[i]);
       }
       cmdl[i] = "-d";
       x->argnum = argc + 2;
@@ -479,11 +479,11 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
             strcpy(cmdl[i], x->curdir->s_name);
             strcat(cmdl[i],"/");
             strcat(cmdl[i],tmp);
-            post(cmdl[i]);
+            post("%s", cmdl[i]);
             free(tmp);
           }
       }
-      post(cmdl[i]);
+      post("%s", cmdl[i]);
     }
     cmdl[i] = "-d";
     x->argnum = argc + 2;
@@ -588,7 +588,7 @@ uintptr_t thread_func(void *p){
           strcat(orcfile,pp->orc);
         }
       else orcfile = pp->orc;
-    post(orcfile);
+    post("%s", orcfile);
 
     fp = fopen(orcfile, "rb");
     if(fp != NULL) {
@@ -760,7 +760,7 @@ static void message_callback(CSOUND *csound,
         x->csmess[i-1]= ' ';
         break;
       }
-    if(x->csmess != NULL && x->messon) post(x->csmess);
+    if(x->csmess != NULL && x->messon) post("%s", x->csmess);
 }
 
 
