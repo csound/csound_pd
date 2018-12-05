@@ -1,0 +1,14 @@
+#N canvas 252 520 515 456 10;
+#X obj 54 211 dac~;
+#X obj 48 158 csound6~ 06_event.csd;
+#X msg 51 23 event i 1 0 3;
+#X text 167 22 start a simple event;
+#X msg 62 62 event i 1 0 -1;
+#X msg 74 88 event i -1 0 0;
+#X text 178 61 start "endless" event (duration -1);
+#X text 188 88 and stop it (negative instrument number);
+#X connect 1 0 0 0;
+#X connect 1 1 0 1;
+#X connect 2 0 1 0;
+#X connect 4 0 1 0;
+#X connect 5 0 1 0;
