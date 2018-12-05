@@ -1,0 +1,4 @@
+# don't include repository configuration in the releases
+# as created by 'git archive'
+.git*      	export-ignore
+.travis.yml	export-ignore
