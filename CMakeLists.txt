@@ -34,10 +34,8 @@ if(PD_HEADER_PATH)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
             "-flat_namespace -undefined suppress")
     endif(APPLE)
-    install(TARGETS pdcsound
-      LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 else()
-   MESSAGE(FATAL_ERROR "PD header not found")
+   MESSAGE(FATAL_ERROR "Pd header not found")
 endif()
     
 

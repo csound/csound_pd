@@ -136,7 +136,7 @@ PUBLIC void csound6_tilde_setup(void)
                 (t_method) csoundapi_destroy, sizeof(t_csoundapi),
                 CLASS_DEFAULT, A_GIMME, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_dsp, gensym("dsp"),
-                    (t_atomtype) 0);
+                    A_CANT, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_event,
                     gensym("event"), A_GIMME, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_reset,
@@ -262,11 +262,11 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
               strcpy(cmdl[i], x->curdir->s_name);
               strcat(cmdl[i],"/");
               strcat(cmdl[i],tmp);
-              post(cmdl[i]);
+              post("%s", cmdl[i]);
               free(tmp);
             }
         }
-        post(cmdl[i]);
+        post("%s", cmdl[i]);
       }
       cmdl[i] = "-d";
       x->argnum = argc + 2;
@@ -371,7 +371,7 @@ static t_int *csoundapi_perform(t_int *w)
           posn++;
         }
         for (n = 0; n < numlets; n++) {
-          out[n][i] = (t_float) (n < chans ? csout[pos] / scal : 0.0);
+          out[n][i] = (t_sample) (n < chans ? csout[pos] / scal : 0.0);
           pos++;
         }
       }
@@ -479,11 +479,11 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
             strcpy(cmdl[i], x->curdir->s_name);
             strcat(cmdl[i],"/");
             strcat(cmdl[i],tmp);
-            post(cmdl[i]);
+            post("%s", cmdl[i]);
             free(tmp);
           }
       }
-      post(cmdl[i]);
+      post("%s", cmdl[i]);
     }
     cmdl[i] = "-d";
     x->argnum = argc + 2;
@@ -588,7 +588,7 @@ uintptr_t thread_func(void *p){
           strcat(orcfile,pp->orc);
         }
       else orcfile = pp->orc;
-    post(orcfile);
+    post("%s", orcfile);
 
     fp = fopen(orcfile, "rb");
     if(fp != NULL) {
@@ -760,7 +760,7 @@ static void message_callback(CSOUND *csound,
         x->csmess[i-1]= ' ';
         break;
       }
-    if(x->csmess != NULL && x->messon) post(x->csmess);
+    if(x->csmess != NULL && x->messon) post("%s", x->csmess);
 }
 
 
