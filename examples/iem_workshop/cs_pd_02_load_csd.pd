@@ -1,0 +1,10 @@
+#N canvas 271 440 450 300 10;
+#X text 43 31 (here 02_simple.csd);
+#X obj 97 163 csound6~ 02_simple.csd;
+#X text 40 15 create a .csd file first;
+#X text 65 65 then type its name as argument;
+#X text 68 81 into the csound6~ object;
+#X text 95 122 note that the number of inlets and;
+#X text 94 139 outlets changed (now 2 = stereo);
+#X text 75 225 MAKE SURE CSOUND'S KSMPS IS NOT BIGGER;
+#X text 74 245 THAN PD'S BLOCK SIZE !;

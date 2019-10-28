@@ -1,0 +1,14 @@
+#N canvas 160 368 515 456 10;
+#X obj 66 225 dac~;
+#X floatatom 140 99 5 0 0 0 - - -, f 5;
+#X obj 140 62 ctlin 1 1;
+#X obj 66 47 adc~ 1;
+#X msg 141 123 chnset transpose \$1;
+#X text 190 100 transposition in cent;
+#X obj 60 172 csound6~ 08_transpose.csd;
+#X connect 1 0 4 0;
+#X connect 2 0 1 0;
+#X connect 3 0 6 0;
+#X connect 4 0 6 0;
+#X connect 6 0 0 0;
+#X connect 6 1 0 1;

@@ -1,0 +1,29 @@
+#N canvas 247 579 450 456 10;
+#X obj 86 383 dac~;
+#X obj 81 45 adc~;
+#X obj 147 24 hsl 128 15 0 1000 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 4200 1;
+#X floatatom 143 50 5 0 0 0 - - -, f 5;
+#X msg 143 71 chnset modfreq \$1;
+#X text 189 49 ring modulator frequency;
+#X obj 80 330 csound6~ 05_RM.csd;
+#X obj 172 125 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 8600 1;
+#X text 166 103 panning;
+#X msg 169 151 chnset pan \$1;
+#X obj 203 215 hsl 128 15 -20 12 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 8000 1;
+#X text 197 193 volume;
+#X floatatom 200 235 5 0 0 0 - - -, f 5;
+#X msg 200 256 chnset vol_db \$1;
+#X connect 1 0 6 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 6 0;
+#X connect 6 0 0 0;
+#X connect 6 1 0 1;
+#X connect 7 0 9 0;
+#X connect 9 0 6 0;
+#X connect 10 0 12 0;
+#X connect 12 0 13 0;
+#X connect 13 0 6 0;

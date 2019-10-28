@@ -1,0 +1,14 @@
+#N canvas 247 564 450 300 10;
+#X obj 87 195 dac~;
+#X text 75 223 audio out;
+#X text 40 15 caution -- feedback is possible!;
+#X obj 81 142 csound6~ 04_audio_thru.csd;
+#X text 178 61 "run 0" stops csound;
+#X msg 185 81 run 0;
+#X text 71 46 audio in;
+#X obj 72 71 adc~;
+#X connect 3 0 0 0;
+#X connect 3 1 0 1;
+#X connect 5 0 3 0;
+#X connect 7 0 3 0;
+#X connect 7 1 3 1;

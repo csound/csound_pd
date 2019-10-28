@@ -1,0 +1,16 @@
+#N canvas 247 559 450 300 10;
+#X obj 92 109 csound6~ 02_simple.csd;
+#X text 40 15 load a new .csd file with "open";
+#X msg 40 35 open 03_sound.csd;
+#X obj 98 162 dac~;
+#X obj 239 164 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 86 190 audio out;
+#X text 206 189 bang when done;
+#X text 134 61 "reset" recompiles the csd;
+#X msg 141 81 reset;
+#X connect 0 0 3 0;
+#X connect 0 1 3 1;
+#X connect 0 3 4 0;
+#X connect 2 0 0 0;
+#X connect 8 0 0 0;

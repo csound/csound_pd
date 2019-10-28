@@ -1,0 +1,11 @@
+#N canvas 334 317 450 300 10;
+#X obj 143 132 csound6~;
+#X text 141 111 one input per default (audio and control);
+#X text 95 62 type csound6~ in an object box;
+#X text 95 79 the csound6~ external will be loaded;
+#X text 40 15 install csound6~ from;
+#X text 43 31 https://github.com/csound/csound_pd;
+#X text 141 154 three outputs per default:;
+#X text 141 175 leftmost: audio;
+#X text 168 199 middle: control;
+#X text 196 223 rightmost: bang when done;
