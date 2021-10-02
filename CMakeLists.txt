@@ -1,17 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
+
+# coerce CMake to use the cc command directly
+if(APPLE)
+ set(CMAKE_C_COMPILER "/usr/bin/cc")
+ set(CMAKE_CXX_COMPILER "/usr/bin/c++")
+endif()
+
 project(csound6_tilde)
+
+# coerce CMake not to set isysroot
+set(CMAKE_OSX_SYSROOT "")
 set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-if(MSVC)
-    find_package(SndFile CONFIG REQUIRED)
-else()
-    find_library(LIBSNDFILE_LIBRARY NAMES sndfile libsndfile-1 libsndfile)
-    if(NOT LIBSNDFILE_LIBRARY)
-        message(FATAL_ERROR "Csound-pd requires the sndfile library")
-    endif()
-endif()
 find_path(PD_HEADER_PATH m_pd.h)
 find_library(PD_LIBRARY pd.dll)
 find_package(CSOUND)
@@ -41,7 +43,9 @@ if(PD_HEADER_PATH)
     set_target_properties(pdcsound PROPERTIES  OUTPUT_NAME ${pdname})
     if(APPLE)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
-            "-flat_namespace -undefined suppress")
+            "-flat_namespace -undefined suppress -F/Library/Frameworks")
+       set_target_properties(pdcsound  PROPERTIES "COMPILE_FLAGS"
+            "-F /Library/Frameworks")
     endif(APPLE)
 else()
    MESSAGE(FATAL_ERROR "Pd header not found")
