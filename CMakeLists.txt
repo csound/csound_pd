@@ -1,11 +1,22 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
+project(csound6_tilde)
 set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-find_package(Csound)
+
+if(MSVC)
+    find_package(SndFile CONFIG REQUIRED)
+else()
+    find_library(LIBSNDFILE_LIBRARY NAMES sndfile libsndfile-1 libsndfile)
+    if(NOT LIBSNDFILE_LIBRARY)
+        message(FATAL_ERROR "Csound-pd requires the sndfile library")
+    endif()
+endif()
 find_path(PD_HEADER_PATH m_pd.h)
 find_library(PD_LIBRARY pd.dll)
+find_package(Csound)
+
 
 if(PD_HEADER_PATH)
     if(APPLE)
@@ -25,7 +36,7 @@ if(PD_HEADER_PATH)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
             "-Wl,--allow-multiple-definition")
     else()
-        target_link_libraries (pdcsound ${CSOUND_LIBRARY})
+        target_link_libraries (pdcsound ${CSOUND_LIBRARY} ${LIBSNDFILE_LIBRARY})
     endif()
     set_target_properties(pdcsound PROPERTIES  PREFIX "")
     set_target_properties(pdcsound PROPERTIES  SUFFIX "")
