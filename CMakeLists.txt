@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 # coerce CMake to use the cc command directly
 if(APPLE)
- set(CMAKE_C_COMPILER "/usr/bin/cc")
- set(CMAKE_CXX_COMPILER "/usr/bin/c++")
+ set(CMAKE_C_COMPILER "cc")
+ set(CMAKE_CXX_COMPILER "c++")
 endif()
 
 project(csound6_tilde)
@@ -31,10 +31,8 @@ if(PD_HEADER_PATH)
     target_include_directories(pdcsound PRIVATE
     ${CSOUND_INCLUDE_DIRS} ${PD_HEADER_PATH})
     if(WIN32)
-        target_link_libraries (pdcsound ${CSOUND_LIBRARY}
-    ${PD_LIBRARY})
-        set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
-            "-Wl,--allow-multiple-definition")
+        target_link_libraries (pdcsound ${CSOUND_LIBRARY} ${PD_LIBRARY})
+        set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"  "-Wl,--allow-multiple-definition")
     else()
         target_link_libraries (pdcsound ${CSOUND_LIBRARY})
     endif()
@@ -43,9 +41,7 @@ if(PD_HEADER_PATH)
     set_target_properties(pdcsound PROPERTIES  OUTPUT_NAME ${pdname})
     if(APPLE)
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
-            "-flat_namespace -undefined suppress -F/Library/Frameworks")
-       set_target_properties(pdcsound  PROPERTIES "COMPILE_FLAGS"
-            "-F /Library/Frameworks")
+            "-flat_namespace -undefined suppress")
     endif(APPLE)
 else()
    MESSAGE(FATAL_ERROR "Pd header not found")
