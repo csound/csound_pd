@@ -14,7 +14,7 @@ set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-find_path(PD_HEADER_PATH m_pd.h)
+find_path(PD_HEADER_PATH m_pd.h HINTS ${CMAKE_SOURCE_DIR}/src)
 find_library(PD_LIBRARY pd.dll)
 find_package(CSOUND)
 
