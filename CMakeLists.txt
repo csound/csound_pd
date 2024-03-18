@@ -14,18 +14,27 @@ set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+if(APPLE)
+  set(pdext ".pd_darwin")
+elseif(WIN32)
+  set(pdext ".dll")
+else()
+  set(pdext ".pd_linux")
+endif()
+
+set (PD_EXTENSION "${pdext}" CACHE STRING "the external extension (.pd_linux, .linux_amd64_64.so)")
+
+
 find_path(PD_HEADER_PATH m_pd.h HINTS ${CMAKE_SOURCE_DIR}/src)
 find_library(PD_LIBRARY pd.dll)
 find_package(CSOUND)
 
 if(PD_HEADER_PATH)
-    if(APPLE) 
-        set(pdname "csound6~.pd_darwin")
-    elseif(WIN32)
-      set(pdname "csound6_tilde.dll")
+    if(WIN32)
+      set(pdname "csound6_tilde${PD_EXTENSION}")
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_WIN32 -D__x86_64__")
     else()
-       set(pdname "csound6~.pd_linux")
+       set(pdname "csound6~${PD_EXTENSION}")
     endif()
     add_library(pdcsound MODULE src/csoundapi_tilde.c)
     target_include_directories(pdcsound PRIVATE
