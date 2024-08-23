@@ -60,7 +60,6 @@ typedef struct t_csoundapi_ {
   t_int     chans;
   t_int     pksmps;
   t_int     pos;
-  t_int     cleanup;
   t_int     end;
   t_int     numlets;
   t_int     result;
@@ -229,7 +228,6 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
     x->result = 1;
     x->run = 1;
     x->chans = 1;
-    x->cleanup = 0;
     x->cmdl = NULL;
     x->iochannels = NULL;
     x->csmess = malloc(MAXMESSTRING);
@@ -247,8 +245,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
       cmdl = (char **) malloc(sizeof(char *) * (argc + 3));
       cmdl[0] = "csound";
       for (i = 1; i < argc + 1; i++) {
-        cmdl[i] = (char *) malloc(64);
-        atom_string(&argv[i - 1], cmdl[i], 64);
+        cmdl[i] = strdup(atom_getsymbol(&argv[i - 1])->s_name);
         if (*cmdl[i] != '-' && isCsoundFile(cmdl[i])) {
 #ifndef WIN32
           if(*cmdl[i] != '/')
@@ -276,7 +273,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
       csoundSetInputChannelCallback(x->csound, in_channel_value_callback);
       csoundSetOutputChannelCallback(x->csound, out_channel_value_callback);
 
-      csoundSetHostMIDIIO(x->csound, 1);
+      csoundSetHostMIDIIO(x->csound);
       csoundSetExternalMidiInOpenCallback(x->csound, open_midi_callback);
       csoundSetExternalMidiReadCallback(x->csound, read_midi_callback);
       csoundSetExternalMidiInCloseCallback(x->csound, close_midi_callback);
@@ -287,8 +284,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
 
       if (!x->result) {
         x->end = 0;
-        x->cleanup = 1;
-        x->chans = csoundGetNchnls(x->csound);
+        x->chans = csoundGetChannels(x->csound, 0);
         x->pksmps = csoundGetKsmps(x->csound);
         x->numlets = x->chans;
         for (i = 1; i < x->numlets && i < CS_MAX_CHANS; i++)
@@ -346,7 +342,8 @@ static t_int *csoundapi_perform(t_int *w)
     t_int   chans = x->chans, samps;
     t_sample *out[CS_MAX_CHANS], *in[CS_MAX_CHANS];
     t_int   i, n, end = x->end, run = x->run;
-    MYFLT  *csout, *csin;
+    const MYFLT *csout;
+    MYFLT *csin;
 
     csout = csoundGetSpout(x->csound);
     csin = csoundGetSpin(x->csound);
@@ -387,38 +384,23 @@ static t_int *csoundapi_perform(t_int *w)
 
 static void csoundapi_event(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
 {
-    char    type[10];
-    MYFLT   *pFields;
-    int     num = argc - 1, i;
-    pFields  = (MYFLT *) malloc(num*sizeof(MYFLT));
-
-    if (!x->result) {
-     atom_string(&argv[0], type, 10);
-     for (i = 1; i < argc; i++) pFields[i - 1] = atom_getfloat(&argv[i]);
-       switch(type[0]) {
-        case 'i':
-         csoundEvent(x->csound, CS_INSTR_EVENT, pFields, num); 
-         break;
-        case 'f':
-         csoundEvent(x->csound, CS_TABLE_EVENT, pFields, num); 
-         break;
-       default:
-         char *cmd[256];
-         int siz = 255;
-         for(i = 0; i < argc; i++) {
-           atom_string(&argv[i], cmd, siz-1);
-           siz -= strlen(cmd);
-           if(siz <= 0) {
-             post("csound7~ warning: event string overflow");
-             free(pFields);
-             return;
-           }
-         }
-         csoundEventString(x->csound, cmd);         
-       }
-     x->end = 0;
+  char    *evt;
+  int     i, siz = 0;
+  t_symbol *symb;
+  for(i = 0; i < argc; i++) {
+    symb = atom_getsymbol(&argv[i]);
+    siz += strlen(symb->s_name) + 1;
+  }
+  if(!x->result) {
+    evt = (char *) calloc(siz+1, 1);
+    for(i = 0; i < argc; i++) {
+      symb = atom_getsymbol(&argv[i]);
+      strcat(evt, symb->s_name);
+      strcat(evt, " ");
     }
-    free(pFields);
+    csoundEventString(x->csound, evt, 1);
+    free(evt);
+  }
 }
 
 static void csoundapi_reset(t_csoundapi *x)
@@ -462,8 +444,7 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
     cmdl = (char **) malloc(sizeof(char *) * (argc + 3));
     cmdl[0] = "csound";
     for (i = 1; i < argc + 1; i++) {
-      cmdl[i] = (char *) malloc(64);
-      atom_string(&argv[i - 1], cmdl[i], 64);
+      cmdl[i] = strdup(atom_getsymbol(&argv[i - 1])->s_name);
       if (*cmdl[i] != '-' && isCsoundFile(cmdl[i])) {
 #ifndef WIN32
         if(*cmdl[i] != '/')
@@ -486,7 +467,7 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
     cmdl[i] = "-d";
     x->argnum = argc + 2;
     x->cmdl = cmdl;
-    csoundSetHostImplementedAudioIO(x->csound, 1, 0);
+    csoundSetHostAudioIO(x->csound);
 
     csoundSetExternalMidiInOpenCallback(x->csound, open_midi_callback);
     csoundSetExternalMidiReadCallback(x->csound, read_midi_callback);
@@ -497,8 +478,7 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
 
     if (!x->result) {
       x->end = 0;
-      x->cleanup = 1;
-      x->chans = csoundGetNchnls(x->csound);
+      x->chans = csoundGetChannels(x->csound, 0);
       x->pksmps = csoundGetKsmps(x->csound);
       x->pos = 0;
       csoundSetHostData(x->csound, x);
@@ -572,9 +552,9 @@ static void csoundapi_tabget(t_csoundapi *x,  t_symbol *tab, t_float f)
 static void csoundapi_compile(t_csoundapi *pp,  t_symbol *orc) {
     int size = 0;
     char c;
-    char *orc, *orcfile;
+    char *orcfile;
     FILE *fp;
-    if(pp->orc != NULL) free(x->orc);
+    if(pp->orc != NULL) free(pp->orc);
     pp->orc = strdup(orc->s_name);
 
 #ifndef WIN32
@@ -600,18 +580,18 @@ static void csoundapi_compile(t_csoundapi *pp,  t_symbol *orc) {
 
       if(size==0) {
         fclose(fp);
-        return 0;
+        return;
       }
 
-      orc = (char *) malloc(size+1);
+      char *orctex = (char *) malloc(size+1);
       fseek(fp, 0, SEEK_SET);
       if(fread(orc,1,size,fp) > 0)
-        csoundCompileOrc(pp->csound, orc, 1); // asynchronous
+        csoundCompileOrc(pp->csound, orctex, 1); // asynchronous
       fclose(fp);
-      free(orc); 
+      free(orctex); 
     }
     else post("csound7~: could not open %s \n", pp->orc);
-    return 0;
+    
 }
 
     
@@ -766,7 +746,7 @@ static int open_midi_callback(CSOUND *cs, void **userData, const char *dev)
     t_csoundapi *x = (t_csoundapi *) csoundGetHostData(cs);
     midi_queue *mq = (midi_queue *) malloc(sizeof(midi_queue));
     if (mq == NULL) {
-      error("unable to allocate memory for midi queue");
+      pd_error(x, "unable to allocate memory for midi queue");
       return -1;
     }
     mq->writep = mq->readp = 0;
@@ -828,7 +808,7 @@ static int read_midi_callback(CSOUND *cs, void *userData,
 #define MIDI_COMMAND(N, M)                              \
   mm = ((int) N) - 1;                                   \
   if ((mm & 0x0f) != mm) {                              \
-    error("midi channel out of range: %d", mm + 1);     \
+    pd_error(x, "midi channel out of range: %d", mm + 1);        \
     return;                                             \
   }                                                     \
   val[wp++] = (mm | M);
@@ -836,7 +816,7 @@ static int read_midi_callback(CSOUND *cs, void *userData,
 #define MIDI_DATA(N, M, S)                      \
   mm = (int) N;                                 \
   if ((mm & M) != mm) {                         \
-    error("midi " S " out of range: %d", mm);   \
+    pd_error(x, "midi " S " out of range: %d", mm);      \
     return;                                     \
   }                                             \
   val[wp++ & MIDI_QUEUE_MASK] = mm;
@@ -851,7 +831,7 @@ static void csoundapi_midi(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     for(i = 0; i<argc; i++) {
       if (argv[i].a_type != A_FLOAT) {
-        error("midi parameter of wrong type");
+        pd_error(x, "midi parameter of wrong type");
         return;
       }
       MIDI_DATA(atom_getfloat(&argv[i]), 0xff, "value");
