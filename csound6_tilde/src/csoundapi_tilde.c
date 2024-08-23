@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
   02111-1307 USA
 
-  csoundapi~: a PD class using the csound API
-  compatible with csound 5
+  csound6~: a PD class using the csound API
+  compatible with csound 6
 */
 
 #include <stdio.h>
@@ -36,15 +36,6 @@
 
 #define MIDI_QUEUE_MAX 1024
 #define MIDI_QUEUE_MASK 1023
-
-static void error(const char *fmt,...) {
-    char string[1024];
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(string, 1024, fmt, args);
-    post("error: %s", string);
-    va_end(args);
-}
 
 static t_class *csoundapi_class = 0;
 
@@ -778,7 +769,7 @@ static int open_midi_callback(CSOUND *cs, void **userData, const char *dev)
     t_csoundapi *x = (t_csoundapi *) csoundGetHostData(cs);
     midi_queue *mq = (midi_queue *) malloc(sizeof(midi_queue));
     if (mq == NULL) {
-      error("unable to allocate memory for midi queue");
+      pd_error(x, "unable to allocate memory for midi queue");
       return -1;
     }
     mq->writep = mq->readp = 0;
@@ -840,7 +831,7 @@ static int read_midi_callback(CSOUND *cs, void *userData,
 #define MIDI_COMMAND(N, M)                              \
   mm = ((int) N) - 1;                                   \
   if ((mm & 0x0f) != mm) {                              \
-    error("midi channel out of range: %d", mm + 1);     \
+    pd_error(x, "midi channel out of range: %d", mm + 1);     \
     return;                                             \
   }                                                     \
   val[wp++] = (mm | M);
@@ -848,7 +839,7 @@ static int read_midi_callback(CSOUND *cs, void *userData,
 #define MIDI_DATA(N, M, S)                      \
   mm = (int) N;                                 \
   if ((mm & M) != mm) {                         \
-    error("midi " S " out of range: %d", mm);   \
+    pd_error(x, "midi " S " out of range: %d", mm);   \
     return;                                     \
   }                                             \
   val[wp++ & MIDI_QUEUE_MASK] = mm;
@@ -863,7 +854,7 @@ static void csoundapi_midi(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     for(i = 0; i<argc; i++) {
       if (argv[i].a_type != A_FLOAT) {
-        error("midi parameter of wrong type");
+        pd_error(x, "midi parameter of wrong type");
         return;
       }
       MIDI_DATA(atom_getfloat(&argv[i]), 0xff, "value");

@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
   02111-1307 USA
 
-  csoundapi~: a PD class using the csound API
-  compatible with csound 5
+  csound7~: a PD class using the csound API
+  compatible with csound 7
 */
 
 #include <stdio.h>
@@ -36,15 +36,6 @@
 
 #define MIDI_QUEUE_MAX 1024
 #define MIDI_QUEUE_MASK 1023
-
-static void error(const char *fmt,...) {
-    char string[1024];
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(string, 1024, fmt, args);
-    post("error: %s", string);
-    va_end(args);
-}
 
 static t_class *csoundapi_class = 0;
 
