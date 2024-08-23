@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2005 Victor Lazzarini
+  Copyright (C) 2005-2024 Victor Lazzarini
   MIDI functionality (c) 2008 Peter Brinkmann
 
   This file is part of Csound.
@@ -44,7 +44,7 @@ static void error(const char *fmt,...) {
     vsnprintf(string, 1024, fmt, args);
     post("error: %s", string);
     va_end(args);
-}  
+}
 
 static t_class *csoundapi_class = 0;
 
@@ -141,7 +141,7 @@ static void csoundapi_compile(t_csoundapi *x,  t_symbol *orc);
 PUBLIC void csound6_tilde_setup(void)
 {
     csoundapi_class =
-      class_new(gensym("csound6~"), (t_newmethod) csoundapi_new,
+      class_new(gensym("csound7~"), (t_newmethod) csoundapi_new,
                 (t_method) csoundapi_destroy, sizeof(t_csoundapi),
                 CLASS_DEFAULT, A_GIMME, 0);
     class_addmethod(csoundapi_class, (t_method) csoundapi_dsp, gensym("dsp"),
@@ -197,9 +197,9 @@ PUBLIC void csound6_tilde_setup(void)
       v3 = v1 % 10;
       v2 = (v1 / 10) % 100;
       v1 = v1 / 1000;
-      post("\ncsound6~ 1.01\n"
+      post("\ncsound7~ 1.09\n"
            " A PD csound class using the Csound %d.%02d.%d API\n"
-           "(c) V Lazzarini, 2005-2007\n", v1, v2, v3);
+           "(c) V Lazzarini, 2005-2024\n", v1, v2, v3);
     }
     /* csoundInitialize(NULL,NULL,0); */
 
@@ -231,7 +231,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
 
     t_csoundapi *x = (t_csoundapi *) pd_new(csoundapi_class);
 
-    x->csound = (CSOUND *) csoundCreate(x);
+    x->csound = (CSOUND *) csoundCreate(x, NULL);
     outlet_new(&x->x_obj, gensym("signal"));
     x->orc = NULL;
     x->numlets = 1;
@@ -281,11 +281,11 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
       x->argnum = argc + 2;
       x->cmdl = cmdl;
 
-      csoundSetHostImplementedAudioIO(x->csound, 1, 0);
+      csoundSetHostAudioIO(x->csound);
       csoundSetInputChannelCallback(x->csound, in_channel_value_callback);
       csoundSetOutputChannelCallback(x->csound, out_channel_value_callback);
 
-      csoundSetHostImplementedMIDIIO(x->csound, 1);
+      csoundSetHostMIDIIO(x->csound, 1);
       csoundSetExternalMidiInOpenCallback(x->csound, open_midi_callback);
       csoundSetExternalMidiReadCallback(x->csound, read_midi_callback);
       csoundSetExternalMidiInCloseCallback(x->csound, close_midi_callback);
@@ -308,7 +308,7 @@ static void *csoundapi_new(t_symbol *s, int argc, t_atom *argv)
         x->pos = 0;
       }
       else
-        post("csound6~ warning: could not compile");
+        post("csound7~ warning: could not compile");
     }
     x->ctlout = outlet_new(&x->x_obj, gensym("list"));
     x->bangout = outlet_new(&x->x_obj, gensym("bang"));
@@ -340,7 +340,7 @@ static void csoundapi_dsp(t_csoundapi *x, t_signal **sp)
       dsp_add((t_perfroutine) csoundapi_perform, 1, x);
     }
     else
-      post("csound6~ warning: orchestra not compiled");
+      post("csound7~ warning: orchestra not compiled");
 }
 
 static t_int *csoundapi_perform(t_int *w)
@@ -402,42 +402,46 @@ static void csoundapi_event(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
     pFields  = (MYFLT *) malloc(num*sizeof(MYFLT));
 
     if (!x->result) {
-      atom_string(&argv[0], type, 10);
-      if (type[0] == 'i' || type[0] == 'f' || type[0] == 'e') {
-        for (i = 1; i < argc; i++)
-          pFields[i - 1] = atom_getfloat(&argv[i]);
-        csoundScoreEvent(x->csound, type[0], pFields, num);
-        x->cleanup = 1;
-        x->end = 0;
-      }
-      else
-        post("csound6~ warning: invalid realtime score event");
+     atom_string(&argv[0], type, 10);
+     for (i = 1; i < argc; i++) pFields[i - 1] = atom_getfloat(&argv[i]);
+       switch(type[0]) {
+        case 'i':
+         csoundEvent(x->csound, CS_INSTR_EVENT, pFields, num); 
+         break;
+        case 'f':
+         csoundEvent(x->csound, CS_TABLE_EVENT, pFields, num); 
+         break;
+       default:
+         char *cmd[256];
+         int siz = 255;
+         for(i = 0; i < argc; i++) {
+           atom_string(&argv[i], cmd, siz-1);
+           siz -= strlen(cmd);
+           if(siz <= 0) {
+             post("csound7~ warning: event string overflow");
+             free(pFields);
+             return;
+           }
+         }
+         csoundEventString(x->csound, cmd);         
+       }
+     x->end = 0;
     }
-    else
-      post("csound6~ warning: not compiled");
     free(pFields);
 }
 
 static void csoundapi_reset(t_csoundapi *x)
 {
     if (x->cmdl != NULL) {
-
-      if (x->end && x->cleanup) {
-        csoundCleanup(x->csound);
-        x->cleanup = 0;
-      }
-
       csoundReset(x->csound);
-      csoundSetHostImplementedAudioIO(x->csound, 1, 0);
+      csoundSetHostAudioIO(x->csound);
       csoundSetExternalMidiInOpenCallback(x->csound, open_midi_callback);
       csoundSetExternalMidiReadCallback(x->csound, read_midi_callback);
       csoundSetExternalMidiInCloseCallback(x->csound, close_midi_callback);
       x->result = csoundCompile(x->csound, x->argnum, (const char **)x->cmdl);
-
       if (!x->result) {
         x->end = 0;
         x->pos = 0;
-        x->cleanup = 1;
       }
     }
 }
@@ -450,21 +454,15 @@ static void csoundapi_rewind(t_csoundapi *x)
       csoundSetScorePending(x->csound, 1);
       x->end = 0;
       x->pos = 0;
-      x->cleanup = 1;
     }
     else
-      post("csound6~ warning: not compiled");
+      post("csound7~ warning: not compiled");
 }
 
 static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
 {
     char  **cmdl;
     int     i;
-
-    if (x->end && x->cleanup) {
-      csoundCleanup(x->csound);
-      x->cleanup = 0;
-    }
 
     if (x->cmdl != NULL)
       free(x->cmdl);
@@ -514,19 +512,19 @@ static void csoundapi_open(t_csoundapi *x, t_symbol *s, int argc, t_atom *argv)
       x->pos = 0;
       csoundSetHostData(x->csound, x);
       if (x->chans != x->numlets)
-        post("csound6~ warning: number of orchestra channels (%d)\n"
+        post("csound7~ warning: number of orchestra channels (%d)\n"
              "does not match number of PD in/outlets (%d)\n"
              "some channels will be muted", x->chans, x->numlets);
       x->run = 1;
     }
     else
-      post("csound6~ warning: could not compile");
+      post("csound7~ warning: could not compile");
 }
 
 static void csoundapi_run(t_csoundapi *x, t_floatarg f)
 {
     x->run = (int) f;
-    post("csoundapi~ run: %d", x->run);
+    post("csound7~ run: %d", x->run);
 }
 
 static void csoundapi_tabset(t_csoundapi *x, t_symbol *tab, t_float f)
@@ -547,10 +545,10 @@ static void csoundapi_tabset(t_csoundapi *x, t_symbol *tab, t_float f)
         }
       }
       else {
-        post ("csound6~: could not find array\n");
+        post ("csound7~: could not find array\n");
         return;
       }
-    } else post("csound6~: csound table %d not found \n", (int) f);
+    } else post("csound7~: csound table %d not found \n", (int) f);
 }
 
 static void csoundapi_tabget(t_csoundapi *x,  t_symbol *tab, t_float f)
@@ -571,18 +569,22 @@ static void csoundapi_tabget(t_csoundapi *x,  t_symbol *tab, t_float f)
         garray_redraw(pdarray);
       }
       else {
-        post ("csound6~: could not find array\n");
+        post ("csound7~: could not find array\n");
         return;
       }
-    } else post("csound6~: csound table %d not found \n", (int) f);
+    } else post("csound7~: csound table %d not found \n", (int) f);
 }
 
-uintptr_t thread_func(void *p){
-    t_csoundapi *pp = (t_csoundapi *) p;
+
+
+
+static void csoundapi_compile(t_csoundapi *pp,  t_symbol *orc) {
     int size = 0;
     char c;
     char *orc, *orcfile;
     FILE *fp;
+    if(pp->orc != NULL) free(x->orc);
+    pp->orc = strdup(orc->s_name);
 
 #ifndef WIN32
     if(*(pp->orc) != '/')
@@ -600,6 +602,7 @@ uintptr_t thread_func(void *p){
     post("%s", orcfile);
 
     fp = fopen(orcfile, "rb");
+    free(orcfile);
     if(fp != NULL) {
       while(!feof(fp))
         size += fread(&c,1,1,fp);
@@ -612,22 +615,16 @@ uintptr_t thread_func(void *p){
       orc = (char *) malloc(size+1);
       fseek(fp, 0, SEEK_SET);
       if(fread(orc,1,size,fp) > 0)
-        csoundCompileOrc(pp->csound, orc);
+        csoundCompileOrc(pp->csound, orc, 1); // asynchronous
       fclose(fp);
-      free(orc);
+      free(orc); 
     }
-    else post("csound6~: could not open %s \n", pp->orc);
-
-    free(orcfile);
+    else post("csound7~: could not open %s \n", pp->orc);
     return 0;
 }
 
+    
 
-static void csoundapi_compile(t_csoundapi *x,  t_symbol *orc) {
-    if(x->orc != NULL) free(x->orc);
-    x->orc = strdup(orc->s_name);
-    csoundCreateThread(thread_func, (void *) x);
-}
 
 
 static void csoundapi_offset(t_csoundapi *x, t_floatarg f)
