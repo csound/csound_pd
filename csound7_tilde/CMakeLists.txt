@@ -6,7 +6,7 @@ if(APPLE)
  set(CMAKE_CXX_COMPILER "c++")
 endif()
 
-project(csound6_tilde)
+project(csound7_tilde)
 
 # coerce CMake not to set isysroot
 set(CMAKE_OSX_SYSROOT "")
@@ -43,10 +43,10 @@ find_package(CSOUND)
 
 if(PD_HEADER_PATH)
     if(WIN32)
-      set(pdname "csound6_tilde${PD_EXTENSION}")
+      set(pdname "csound7_tilde${PD_EXTENSION}")
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_WIN32 -D__x86_64__")
     else()
-       set(pdname "csound6~${PD_EXTENSION}")
+       set(pdname "csound7~${PD_EXTENSION}")
     endif()
     add_library(pdcsound MODULE src/csoundapi_tilde.c)
     target_include_directories(pdcsound PRIVATE
