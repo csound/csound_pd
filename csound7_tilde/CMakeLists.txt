@@ -39,7 +39,7 @@ endif()
 
 find_path(PD_HEADER_PATH m_pd.h HINTS ${CMAKE_SOURCE_DIR}/src)
 find_library(PD_LIBRARY pd.dll)
-find_package(CSOUND)
+find_package(Csound)
 
 if(PD_HEADER_PATH)
     if(WIN32)
